@@ -36,4 +36,6 @@ libraryDependencies ++= Seq(
                      "commons-transaction" % "commons-transaction" % "1.2"
 )
 
+fork in run := true
+
 // resolvers += "Kuali Nexus Repositories" at "http://nexus.kuali.org/content/groups/public"
