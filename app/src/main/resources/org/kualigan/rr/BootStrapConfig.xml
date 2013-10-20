@@ -37,9 +37,9 @@ in configuration files outside of the project.
   <param name="krms.mode">LOCAL</param>
   <param name="ksb.mode">LOCAL</param>
 
-  <param name="module.name">rice-with-redis</param>
-  <param name="application.id">rice-with-redis</param>
-  <param name="app.context.name">rice-with-redis</param>
+  <param name="module.name">rice-with-redis-dd</param>
+  <param name="application.id">rice-with-redis-dd</param>
+  <param name="app.context.name">rice-with-redis-dd-web</param>
 
   <param name="filter.login.class">org.kuali.rice.krad.web.filter.DummyLoginFilter</param>
   <param name="filtermapping.login.1">/*</param>
