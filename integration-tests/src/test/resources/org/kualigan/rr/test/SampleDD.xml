@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans	http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean id="SampleBO" parent="BusinessObjectEntry">
+		<property name="businessObjectClass" value="org.kualigan.rr.test.SampleBO" />
+		<!--<property name="inquiryDefinition">-->
+			<!--<ref bean="AccountCombination-inquiryDefinition" />-->
+		<!--</property>-->
+		<!--<property name="lookupDefinition">-->
+			<!--<ref bean="AccountCombination-lookupDefinition" />-->
+		<!--</property>-->
+		<property name="titleAttribute" value="titleAttr" />
+		<property name="objectLabel" value="Sample BO" />
+		<!--<property name="attributes">-->
+			<!--<list>-->
+				<!--<ref bean="AccountCombination-ccid" />-->
+				<!--<ref bean="AccountCombination-chartOfAccountsCode" />-->
+				<!--<ref bean="AccountCombination-accountNumber" />-->
+				<!--<ref bean="AccountCombination-financialObjectCode" />-->
+				<!--<ref bean="AccountCombination-activeFromDate" />-->
+				<!--<ref bean="AccountCombination-activeToDate" />-->
+				<!--<ref bean="AccountCombination-active"/>-->
+				<!--<ref bean="AccountCombination-lastModifiedDate"/>-->
+				<!--<ref bean="AccountCombination-account.codeAndDescription" />-->
+				<!--<ref bean="AccountCombination-objectCode.codeAndDescription" />-->
+			<!--</list>-->
+		<!--</property>-->
+	</bean>
+
+	<!--&lt;!&ndash; Attribute Definitions &ndash;&gt;-->
+	<!--<bean id="AccountCombination-ccid" parent="AccountCombination-ccid-parentBean" />-->
+	<!--<bean id="AccountCombination-ccid-parentBean" abstract="true"-->
+		<!--parent="AttributeDefinition">-->
+		<!--<property name="name" value="ccid" />-->
+		<!--<property name="label" value="CCID" />-->
+		<!--<property name="shortLabel" value="CCID" />-->
+		<!--<property name="maxLength" value="10" />-->
+		<!--<property name="forceUppercase" value="false" />-->
+		<!--<property name="control">-->
+			<!--<bean parent="TextControlDefinition" p:size="15" />-->
+		<!--</property>-->
+	<!--</bean>-->
+
+	<!--<bean id="AccountCombination-chartOfAccountsCode" parent="Chart-chartOfAccountsCode">-->
+		<!--<property name="name" value="chartOfAccountsCode" />-->
+	<!--</bean>-->
+
+	<!--<bean id="AccountCombination-accountNumber" parent="Account-accountNumber">-->
+		<!--<property name="name" value="accountNumber" />-->
+		<!--<property name="label" value="Account Number"/>-->
+	<!--</bean>-->
+
+	<!--<bean id="AccountCombination-financialObjectCode" parent="ObjectCode-financialObjectCode">-->
+		<!--<property name="name" value="financialObjectCode" />-->
+	<!--</bean>-->
+
+	<!--<bean id="AccountCombination-activeFromDate" parent="GenericAttributes-genericDateTimestamp">-->
+		<!--<property name="name" value="activeFromDate" />-->
+		<!--<property name="label" value="Effective Start Date" />-->
+		<!--<property name="shortLabel" value="Eff Start Date" />-->
+	<!--</bean>-->
+
+	<!--<bean id="AccountCombination-activeToDate" parent="GenericAttributes-genericDateTimestamp">-->
+		<!--<property name="name" value="activeToDate" />-->
+		<!--<property name="label" value="Effective End Date" />-->
+		<!--<property name="shortLabel" value="Eff End Date" />-->
+	<!--</bean>-->
+
+	<!--<bean id="AccountCombination-active" parent="GenericAttributes-activeIndicator">-->
+		<!--<property name="name" value="active"/>-->
+	<!--</bean>-->
+
+	<!--<bean id="AccountCombination-lastModifiedDate" parent="GenericAttributes-genericDateTimestamp">-->
+		<!--<property name="name" value="lastModifiedDate"/>-->
+	<!--</bean>-->
+
+	<!--<bean id="AccountCombination-account.codeAndDescription" parent="Account-codeAndDescription" p:name="account.codeAndDescription"/>-->
+
+	<!--<bean id="AccountCombination-objectCode.codeAndDescription" parent="ObjectCode-codeAndDescription" p:name="objectCode.codeAndDescription"/>-->
+
+	<!--&lt;!&ndash; Lookups &ndash;&gt;-->
+	<!--<bean id="AccountCombination-lookupDefinition" parent="AccountCombination-lookupDefinition-parentBean" />-->
+	<!--<bean id="AccountCombination-lookupDefinition-parentBean"-->
+		<!--abstract="true" parent="LookupDefinition">-->
+		<!--<property name="title" value="Accounting Combination Lookup" />-->
+
+		<!--<property name="defaultSort">-->
+			<!--<bean parent="SortDefinition">-->
+				<!--<property name="attributeNames">-->
+					<!--<list>-->
+						<!--<value>ccid</value>-->
+					<!--</list>-->
+				<!--</property>-->
+			<!--</bean>-->
+		<!--</property>-->
+		<!--<property name="lookupFields">-->
+			<!--<list>-->
+				<!--<bean parent="FieldDefinition" p:attributeName="chartOfAccountsCode" />-->
+				<!--<bean parent="FieldDefinition" p:attributeName="accountNumber" />-->
+				<!--<bean parent="FieldDefinition" p:attributeName="financialObjectCode" />-->
+				<!--<bean parent="FieldDefinition" p:attributeName="activeFromDate" />-->
+				<!--<bean parent="FieldDefinition" p:attributeName="activeToDate" />-->
+			<!--</list>-->
+		<!--</property>-->
+		<!--<property name="resultFields">-->
+			<!--<list>-->
+				<!--<bean parent="FieldDefinition" p:attributeName="ccid" />-->
+				<!--<bean parent="FieldDefinition" p:attributeName="chartOfAccountsCode" />-->
+				<!--<bean parent="FieldDefinition" p:attributeName="account.codeAndDescription" />-->
+				<!--<bean parent="FieldDefinition" p:attributeName="objectCode.codeAndDescription" />-->
+				<!--<bean parent="FieldDefinition" p:attributeName="activeFromDate" />-->
+				<!--<bean parent="FieldDefinition" p:attributeName="activeToDate" />-->
+			<!--</list>-->
+		<!--</property>-->
+	<!--</bean>-->
+
+	<!--&lt;!&ndash; Inquiries &ndash;&gt;-->
+	<!--<bean id="AccountCombination-inquiryDefinition" parent="AccountCombination-inquiryDefinition-parentBean" />-->
+	<!--<bean id="AccountCombination-inquiryDefinition-parentBean"-->
+		<!--abstract="true" parent="InquiryDefinition">-->
+		<!--<property name="title" value="Accounting Combination Inquiry" />-->
+		<!--<property name="inquirySections">-->
+			<!--<list>-->
+				<!--<ref bean="AccountCombination-inquirySectionDefinition" />-->
+			<!--</list>-->
+		<!--</property>-->
+	<!--</bean>-->
+	<!--<bean id="AccountCombination-inquirySectionDefinition" parent="AccountCombination-inquirySectionDefinition-parentBean" />-->
+	<!--<bean id="AccountCombination-inquirySectionDefinition-parentBean"-->
+		<!--parent="InquirySectionDefinition" abstract="true">-->
+		<!--<property name="title" value="" />-->
+		<!--<property name="numberOfColumns" value="1" />-->
+		<!--<property name="inquiryFields">-->
+			<!--<list>-->
+				<!--<bean parent="FieldDefinition" p:attributeName="ccid" />-->
+				<!--<bean parent="FieldDefinition" p:attributeName="chartOfAccountsCode" />-->
+				<!--<bean parent="FieldDefinition" p:attributeName="accountNumber" />-->
+				<!--<bean parent="FieldDefinition" p:attributeName="financialObjectCode" />-->
+				<!--<bean parent="FieldDefinition" p:attributeName="activeFromDate" />-->
+				<!--<bean parent="FieldDefinition" p:attributeName="activeToDate" />-->
+			<!--</list>-->
+		<!--</property>-->
+	<!--</bean>-->
+</beans>
+
