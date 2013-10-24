@@ -10,6 +10,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -50,8 +51,10 @@ public abstract class BaseDataDictionaryIndexTests  extends AbstractJUnit4Spring
 	protected static final String DATA_OBJECT_SIMPLE_NAME = "SampleDO";
 	protected static final String DATA_OBJECT_CLASS_NAME = "org.kualigan.rr.test.SampleDO";
 
-	protected static final String DOCUMENT_BEAN_ID = "SampleTXDocument";
+	protected static final String DOCUMENT_TX_BEAN_ID = "SampleTXDocument";
 	protected static final String DOCUMENT_TX_TYPE_NAME = "txDocType";
+
+	protected static final String DOCUMENT_MAINTENANCE_BEAN_ID = "SampleMaintenanceDocument";
 
 	@Before
 	public void initDDIndex(){
@@ -59,7 +62,8 @@ public abstract class BaseDataDictionaryIndexTests  extends AbstractJUnit4Spring
 		//todo: find a way to load kuali default listable beans from application context
 		ddBeans.registerSingleton(BUSINESS_OBJECT_BEAN_ID, applicationContext.getBean(BUSINESS_OBJECT_BEAN_ID));
 		ddBeans.registerSingleton(DATA_OBJECT_BEAN_ID, applicationContext.getBean(DATA_OBJECT_BEAN_ID));
-		ddBeans.registerSingleton(DOCUMENT_BEAN_ID, applicationContext.getBean(DOCUMENT_BEAN_ID));
+		ddBeans.registerSingleton(DOCUMENT_TX_BEAN_ID, applicationContext.getBean(DOCUMENT_TX_BEAN_ID));
+		ddBeans.registerSingleton(DOCUMENT_MAINTENANCE_BEAN_ID, applicationContext.getBean(DOCUMENT_MAINTENANCE_BEAN_ID));
 		dataDictionaryIndex = doInitDDIndex(ddBeans);
 		dataDictionaryIndex.run();
 	}
@@ -110,13 +114,48 @@ public abstract class BaseDataDictionaryIndexTests  extends AbstractJUnit4Spring
 	}
 
 	@Test
-	public void getDocumentEntries() throws Exception{
+	public void getDocumentEntries_Transactional() throws Exception{
 		//given dd Index is loaded
 		//when
 		Map<String, DocumentEntry> result = dataDictionaryIndex.getDocumentEntries();
 		//then
 		assertTrue(result.containsKey(DOCUMENT_TX_TYPE_NAME));
+		assertTrue(result.containsKey("org.kualigan.rr.test.SampleTXDocument"));
+		assertTrue(result.containsKey("org.kualigan.rr.test.SampleTXBaseDocument"));
+
+		assertTrue(result.containsKey("SampleTXDocument"));
+		assertTrue(result.containsKey("SampleTXBaseDocument"));
 	}
+
+	@Test
+	public void getDocumentEntries_Maintenance() throws Exception{
+		//given dd Index is loaded
+		//when
+		Map<String, DocumentEntry> result = dataDictionaryIndex.getDocumentEntries();
+		//then
+		assertFalse(result.containsKey("org.kualigan.rr.test.SampleMaintenanceDocument"));
+		assertFalse(result.containsKey("org.kualigan.rr.test.SampleMaintenanceBaseDocument"));
+		assertTrue(result.containsKey("SampleBOMaintenanceDocument"));
+	}
+
+	@Test
+	public void getDocumentEntriesByBusinessObjectClass() throws Exception{
+		//given dd Index is loaded
+		//when
+		Map<Class, DocumentEntry> result = dataDictionaryIndex.getDocumentEntriesByBusinessObjectClass();
+		//then
+		assertTrue(result.containsKey(Class.forName("org.kualigan.rr.test.SampleBO")));
+	}
+
+	@Test
+	public void getDocumentEntriesByMaintainableClass() throws Exception{
+		//given dd Index is loaded
+		//when
+		Map<Class, DocumentEntry> result = dataDictionaryIndex.getDocumentEntriesByMaintainableClass();
+		//then
+		assertTrue(result.containsKey(Class.forName("org.kualigan.rr.test.SampleMaintanable")));
+	}
+
 
 	private void assertDataObjectEntry(DataObjectEntry dataObjectEntry) throws Exception {
 		assertEquals("Data Object Class",Class.forName("org.kualigan.rr.test.SampleDO"),dataObjectEntry.getDataObjectClass());

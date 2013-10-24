@@ -9,15 +9,22 @@ import org.springframework.data.redis.core.RedisTemplate;
 import javax.annotation.Resource;
 import java.util.Map;
 
-public class RedisDataDictionaryIndex extends DataDictionaryIndex{
+//TODO: NEW IDEA - SHA keys to improve performance
+//TODO: NEW IDEA - Check value exists and repoint to existing value
+public class RedisDataDictionaryIndex extends DataDictionaryIndex {
 
-	@Autowired
-	private RedisTemplate<String, String> redisTemplate;
-
-	@Resource(name="redisTemplate")
-	private HashOperations hashOperations;
+	private static final String INDEX_BUSINESS_OBJECT = "businessObject";
+	private static final String INDEX_JSTL = "jstl";
+	private static final String INDEX_DATA_OBJECT = "dataObject";
+	private static final String INDEX_DOCUMENT = "document";
+	private static final String INDEX_DOCUMENT_OBJECT_CLASS = "document:objectClass";
+	private static final String INDEX_DOCUMENT_MAINTAINABLE_CLASS = "document:maintainableClass";
 
 	private final ListableBeanFactory ddBeans;
+	@Autowired
+	private RedisTemplate<String, String> redisTemplate;
+	@Resource(name = "redisTemplate")
+	private HashOperations hashOperations;
 
 	/* !!!For testing purposes only!!! */
 	RedisDataDictionaryIndex(RedisTemplate<String, String> redisTemplate, HashOperations hashOperations, DefaultListableBeanFactory ddBeans) {
@@ -31,57 +38,40 @@ public class RedisDataDictionaryIndex extends DataDictionaryIndex{
 		this.ddBeans = ddBeans;
 	}
 
-
-	//TODO: NEW IDEA - SHA keys to improve performance
-	//TODO: NEW IDEA - Check value exists and repoint to existing value
-
-	private void buildDDIndicies() {
-		HashOperations hashOperations = redisTemplate.opsForHash();
-
-
-//		// primary indices
-//		businessObjectEntries = new HashMap<String, BusinessObjectEntry>();
-//		objectEntries = new HashMap<String, DataObjectEntry>();
-//		documentEntries = new HashMap<String, DocumentEntry>();
-//
-//		// alternate indices
-//		documentEntriesByBusinessObjectClass = new HashMap<Class, DocumentEntry>();
-//		documentEntriesByMaintainableClass = new HashMap<Class, DocumentEntry>();
-//		entriesByJstlKey = new HashMap<String, DataDictionaryEntry>();
-
-		// loop over all beans in the context
-		buildDataIndicies();
-		buildDocumentIndicies();
-
-	}
-
 	@Override
 	public void run() {
-		buildDDIndicies();
+		buildDataIndicies();
+		buildDocumentIndicies();
 	}
 
 	@Override
 	public Map<String, BusinessObjectEntry> getBusinessObjectEntries() {
-		Map<String, BusinessObjectEntry> entries = hashOperations.entries("businessObject");
-		return entries;
+		return hashOperations.entries(INDEX_BUSINESS_OBJECT);
 	}
 
 	@Override
 	public Map<String, DataObjectEntry> getDataObjectEntries() {
-		Map<String, DataObjectEntry> entries = hashOperations.entries("dataObject");
-		return entries;
+		return hashOperations.entries(INDEX_DATA_OBJECT);
 	}
 
 	@Override
 	public Map<String, DataDictionaryEntry> getEntriesByJstlKey() {
-		Map<String, DataDictionaryEntry> entries = hashOperations.entries("jstl");
-		return entries;
+		return hashOperations.entries("jstl");
 	}
 
 	@Override
 	public Map<String, DocumentEntry> getDocumentEntries() {
-		Map<String, DocumentEntry> entries = hashOperations.entries("document");
-		return entries;
+		return hashOperations.entries(INDEX_DOCUMENT);
+	}
+
+	@Override
+	public Map<Class, DocumentEntry> getDocumentEntriesByBusinessObjectClass() {
+		return hashOperations.entries(INDEX_DOCUMENT_OBJECT_CLASS);
+	}
+
+	@Override
+	public Map<Class, DocumentEntry> getDocumentEntriesByMaintainableClass() {
+		return hashOperations.entries("document:maintainableClass");
 	}
 
 	private void buildDataIndicies() {
@@ -89,63 +79,71 @@ public class RedisDataDictionaryIndex extends DataDictionaryIndex{
 		for (DataObjectEntry entry : boBeans.values()) {
 			validateUniqueness(entry);
 			// put all BO and DO entries in the objectEntries map
-			hashOperations.put("dataObject", entry.getDataObjectClass().getSimpleName(), entry);
-			hashOperations.put("dataObject", entry.getDataObjectClass().getName(), entry);
+			hashOperations.put(INDEX_DATA_OBJECT, entry.getDataObjectClass().getSimpleName(), entry);
+			hashOperations.put(INDEX_DATA_OBJECT, entry.getDataObjectClass().getName(), entry);
 			// keep a separate map of BO entries for now
 			if (entry instanceof BusinessObjectEntry) {
 				BusinessObjectEntry boEntry = (BusinessObjectEntry) entry;
-				hashOperations.put("businessObject", boEntry.getBusinessObjectClass().getSimpleName(), boEntry);
-				hashOperations.put("businessObject", boEntry.getBusinessObjectClass().getName(), boEntry);
+				hashOperations.put(INDEX_BUSINESS_OBJECT, boEntry.getBusinessObjectClass().getSimpleName(), boEntry);
+				hashOperations.put(INDEX_BUSINESS_OBJECT, boEntry.getBusinessObjectClass().getName(), boEntry);
 				// If a "base" class is defined for the entry, index the entry by that class as well.
 				if (boEntry.getBaseBusinessObjectClass() != null) {
-					hashOperations.put("businessObject", boEntry.getBaseBusinessObjectClass().getSimpleName(), boEntry);
-					hashOperations.put("businessObject", boEntry.getBaseBusinessObjectClass().getName(), boEntry);
+					hashOperations.put(INDEX_BUSINESS_OBJECT, boEntry.getBaseBusinessObjectClass().getSimpleName(), boEntry);
+					hashOperations.put(INDEX_BUSINESS_OBJECT, boEntry.getBaseBusinessObjectClass().getName(), boEntry);
 				}
 			}
-			hashOperations.put("jstl",entry.getJstlKey(), entry);
+			hashOperations.put(INDEX_JSTL, entry.getJstlKey(), entry);
 		}
 	}
 
 	private void buildDocumentIndicies() {
-//		//Build Document Entry Index
 		Map<String, DocumentEntry> docBeans = ddBeans.getBeansOfType(DocumentEntry.class);
 		for (DocumentEntry entry : docBeans.values()) {
-			String entryName = entry.getDocumentTypeName();
 			validateTransactionDocuments(entry);
 			validateUniqueness(entry);
-			hashOperations.put("document", entryName, entry);
-			hashOperations.put("jstl", entry.getJstlKey(), entry);
-
-//			//documentEntries.put(entry.getFullClassName(), entry);
-//			documentEntries.put(entry.getDocumentClass().getName(), entry);
-//			if (entry.getBaseDocumentClass() != null) {
-//				documentEntries.put(entry.getBaseDocumentClass().getName(), entry);
-//			}
-//			entriesByJstlKey.put(entry.getJstlKey(), entry);
-//
-//			if (entry instanceof TransactionalDocumentEntry) {
-//				TransactionalDocumentEntry tde = (TransactionalDocumentEntry) entry;
-//
-//				documentEntries.put(tde.getDocumentClass().getSimpleName(), entry);
-//				if (tde.getBaseDocumentClass() != null) {
-//					documentEntries.put(tde.getBaseDocumentClass().getSimpleName(), entry);
-//				}
-//			}
-//
-//			if (entry instanceof MaintenanceDocumentEntry) {
-//				MaintenanceDocumentEntry mde = (MaintenanceDocumentEntry) entry;
-//
-//				documentEntriesByBusinessObjectClass.put(mde.getDataObjectClass(), entry);
-//				documentEntriesByMaintainableClass.put(mde.getMaintainableClass(), entry);
-//				documentEntries.put(mde.getDataObjectClass().getSimpleName() + "MaintenanceDocument", entry);
-//			}
+			buildBaseDocumentIndices(entry);
+			buildTransactionalDocumenIndicies(entry);
+			buildMaintenanceDocumentIndicies(entry);
 		}
 	}
 
+	private void buildBaseDocumentIndices(DocumentEntry entry) {
+		final String documentTypeName = entry.getDocumentTypeName();
+		hashOperations.put(INDEX_DOCUMENT, entry.getFullClassName(), entry);
+		hashOperations.put(INDEX_DOCUMENT, entry.getDocumentClass().getName(), entry);
+		if (entry.getBaseDocumentClass() != null) {
+			hashOperations.put(INDEX_DOCUMENT, entry.getBaseDocumentClass().getName(), entry);
+		}
+		if (StringUtils.isNotBlank(entry.getJstlKey())){
+			hashOperations.put(INDEX_JSTL, entry.getJstlKey(), entry);
+		}
+		if (StringUtils.isNotBlank(documentTypeName)){
+			hashOperations.put(INDEX_DOCUMENT, documentTypeName, entry);
+		}
+	}
 
-	private void validateTransactionDocuments(DocumentEntry entry){
-		if (!(entry instanceof TransactionalDocumentEntry)){
-			  return;
+	private void buildMaintenanceDocumentIndicies(DocumentEntry entry) {
+		if (entry instanceof MaintenanceDocumentEntry) {
+			MaintenanceDocumentEntry mde = (MaintenanceDocumentEntry) entry;
+			hashOperations.put(INDEX_DOCUMENT, mde.getDataObjectClass().getSimpleName() + "MaintenanceDocument", entry);
+			hashOperations.put(INDEX_DOCUMENT_OBJECT_CLASS, mde.getDataObjectClass(), entry);
+			hashOperations.put(INDEX_DOCUMENT_MAINTAINABLE_CLASS, mde.getMaintainableClass(), entry);
+		}
+	}
+
+	private void buildTransactionalDocumenIndicies(DocumentEntry entry) {
+		if (entry instanceof TransactionalDocumentEntry) {
+			TransactionalDocumentEntry tde = (TransactionalDocumentEntry) entry;
+			hashOperations.put(INDEX_DOCUMENT, tde.getDocumentClass().getSimpleName(), entry);
+			if (tde.getBaseDocumentClass() != null) {
+				hashOperations.put(INDEX_DOCUMENT, tde.getBaseDocumentClass().getSimpleName(), entry);
+			}
+		}
+	}
+
+	private void validateTransactionDocuments(DocumentEntry entry) {
+		if (!(entry instanceof TransactionalDocumentEntry)) {
+			return;
 		}
 		DocumentEntry existingDocumentEntry = getDocumentEntries().get(entry.getFullClassName());
 		if (existingDocumentEntry != null && !StringUtils.equals(existingDocumentEntry.getDocumentTypeName(), entry.getDocumentTypeName())) {
@@ -169,7 +167,6 @@ public class RedisDataDictionaryIndex extends DataDictionaryIndex{
 				.append(" / existing=").append(existingEntry.getFullClassName()).toString());
 		}
 	}
-
 
 
 }
