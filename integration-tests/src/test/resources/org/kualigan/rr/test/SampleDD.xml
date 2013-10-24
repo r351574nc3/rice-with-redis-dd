@@ -3,8 +3,9 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans	http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="SampleBO" parent="BusinessObjectEntry">
+	<bean id="SampleBusinessObject" parent="BusinessObjectEntry">
 		<property name="businessObjectClass" value="org.kualigan.rr.test.SampleBO" />
+		<property name="baseBusinessObjectClass" value="org.kualigan.rr.test.BaseSampleBO" />
 		<!--<property name="inquiryDefinition">-->
 			<!--<ref bean="AccountCombination-inquiryDefinition" />-->
 		<!--</property>-->
@@ -16,17 +17,14 @@
 		<!--<property name="attributes">-->
 			<!--<list>-->
 				<!--<ref bean="AccountCombination-ccid" />-->
-				<!--<ref bean="AccountCombination-chartOfAccountsCode" />-->
-				<!--<ref bean="AccountCombination-accountNumber" />-->
-				<!--<ref bean="AccountCombination-financialObjectCode" />-->
-				<!--<ref bean="AccountCombination-activeFromDate" />-->
-				<!--<ref bean="AccountCombination-activeToDate" />-->
-				<!--<ref bean="AccountCombination-active"/>-->
-				<!--<ref bean="AccountCombination-lastModifiedDate"/>-->
-				<!--<ref bean="AccountCombination-account.codeAndDescription" />-->
-				<!--<ref bean="AccountCombination-objectCode.codeAndDescription" />-->
 			<!--</list>-->
 		<!--</property>-->
+	</bean>
+
+	<bean id="SampleDataObject" parent="DataObjectEntry">
+		<property name="dataObjectClass" value="org.kualigan.rr.test.SampleDO" />
+		<property name="titleAttribute" value="titleAttr" />
+		<property name="objectLabel" value="Sample DO" />
 	</bean>
 
 	<!--&lt;!&ndash; Attribute Definitions &ndash;&gt;-->
