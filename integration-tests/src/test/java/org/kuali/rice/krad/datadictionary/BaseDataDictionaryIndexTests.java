@@ -50,12 +50,16 @@ public abstract class BaseDataDictionaryIndexTests  extends AbstractJUnit4Spring
 	protected static final String DATA_OBJECT_SIMPLE_NAME = "SampleDO";
 	protected static final String DATA_OBJECT_CLASS_NAME = "org.kualigan.rr.test.SampleDO";
 
+	protected static final String DOCUMENT_BEAN_ID = "SampleTXDocument";
+	protected static final String DOCUMENT_TX_TYPE_NAME = "txDocType";
+
 	@Before
 	public void initDDIndex(){
 		DefaultListableBeanFactory ddBeans = new DefaultListableBeanFactory();
 		//todo: find a way to load kuali default listable beans from application context
 		ddBeans.registerSingleton(BUSINESS_OBJECT_BEAN_ID, applicationContext.getBean(BUSINESS_OBJECT_BEAN_ID));
 		ddBeans.registerSingleton(DATA_OBJECT_BEAN_ID, applicationContext.getBean(DATA_OBJECT_BEAN_ID));
+		ddBeans.registerSingleton(DOCUMENT_BEAN_ID, applicationContext.getBean(DOCUMENT_BEAN_ID));
 		dataDictionaryIndex = doInitDDIndex(ddBeans);
 		dataDictionaryIndex.run();
 	}
@@ -103,6 +107,15 @@ public abstract class BaseDataDictionaryIndexTests  extends AbstractJUnit4Spring
 		//then
 		assertTrue(result.containsKey(BUSINESS_OBJECT_SIMPLE_NAME));
 		assertTrue(result.containsKey(DATA_OBJECT_SIMPLE_NAME));
+	}
+
+	@Test
+	public void getDocumentEntries() throws Exception{
+		//given dd Index is loaded
+		//when
+		Map<String, DocumentEntry> result = dataDictionaryIndex.getDocumentEntries();
+		//then
+		assertTrue(result.containsKey(DOCUMENT_TX_TYPE_NAME));
 	}
 
 	private void assertDataObjectEntry(DataObjectEntry dataObjectEntry) throws Exception {

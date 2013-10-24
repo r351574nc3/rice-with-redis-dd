@@ -6,7 +6,8 @@ public class RedisDataDictionaryIndexTests extends BaseDataDictionaryIndexTests{
 
 	@Override
 	protected DataDictionaryIndex doInitDDIndex(DefaultListableBeanFactory ddBeans) {
-		return new RedisDataDictionaryIndex((RedisTemplate<String, String>) applicationContext.getBean("redisTemplate"), ddBeans);
+		final RedisTemplate<String, String> redisTemplate = (RedisTemplate<String, String>) applicationContext.getBean("redisTemplate");
+		return new RedisDataDictionaryIndex(redisTemplate,redisTemplate.opsForHash(),ddBeans);
 	}
 
 }
