@@ -89,6 +89,11 @@
         <pluginManagement>
             <plugins>
                 <plugin>
+		            <groupId>org.kualigan.maven.plugins</groupId>
+		            <artifactId>redis-maven-plugin</artifactId>
+		            <version>${redis-maven-plugin.version}</version>
+                </plugin>
+                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-war-plugin</artifactId>
                     <version>${plugin.war.version}</version>
@@ -155,12 +160,6 @@
 			        <encoding>iso-8859-1</encoding>
 		        </configuration>
 	        </plugin>
-
-            <plugin>
-		        <groupId>org.kualigan.maven.plugins</groupId>
-		        <artifactId>redis-maven-plugin</artifactId>
-		        <version>${redis-maven-plugin.version}</version>
-            </plugin>
 
         </plugins>
     </build>
@@ -420,7 +419,7 @@
 
 	        <dependency>
 		        <groupId>org.springframework</groupId>
-		        <artifactId>org.springframework.test</artifactId>
+		        <artifactId>spring-test</artifactId>
 		        <version>3.0.4.RELEASE</version>
 		        <scope>test</scope>
 	        </dependency>
